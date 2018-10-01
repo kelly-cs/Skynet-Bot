@@ -155,7 +155,7 @@ class SnakeNN:
                 prev_observation = self.generate_observation(snake)
 
     def train(self):
-        training_data = self.initial_population()
+        training_data = self.initial_population() #using initial_games data
         nn_model = self.model()
         nn_model = self.train_model(training_data, nn_model)
         self.test_model(nn_model)

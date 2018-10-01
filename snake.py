@@ -157,8 +157,8 @@ if __name__ == "__main__":
     game = SnakeGame(gui = True)
     game.start()
     try:
-        for _ in range(200):
-            game.step(randint(0,3))
+        for _ in range(100):
+            game.step(randint(0,3)) # if this is ran as its own program, it will just do random stuff.
         exit()
     except Exception as e:
         try:
