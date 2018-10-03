@@ -9,6 +9,28 @@ ARGS:
 -g true/false | --gui true/false | Show the game's GUI, or only text results.
 -i int | --initial_games int | Amount of initial test set generation. 
 -t int | --test_games int | Amount of games to run against the training set.030.
+
+
+Training will be done with a dataset in CSV format for now. Later we can use more complex methods.
+
+
+We can gather initial data by randomly running the snake game, and acquiring histories of inputs.
+For each move, we can capture everything the snake "sees" and refer back to it later.
+So: for Step 1: snake_observations[(0,1,1,3)
+
+A dataset will have the following shape:
+1,0,1,1,3 
+0,0,1,1,2
+1,0,1,2,3
+
+To provide vision to the immediate left, front, right, and back of the snake, as well
+as the suggested move (0, 1, 2, or 3 to represent direction choice.)
+
+When this is ran through the neural network, the inputs (1,0,1,2 - not the last element!) will
+be inputted into the NN's "sensors" - one for each value, or feature. These will then pass through
+a hidden layer in the NN, using TFLearn, and return an output (0,1,2, or 3 to represent movement choice.)
+
+
 '''
 
 from snake import SnakeGame
@@ -29,17 +51,12 @@ class SnakeNN3:
             self.goal_steps = goal_steps
             self.lr = lr
             self.filename = filename
-            self.vectors_and_keys = [
-                    [[-1, 0], 0],
-                    [[0, 1], 1],
-                    [[1, 0], 2],
-                    [[0, -1], 3]
-                    ]    
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Enter a filename to parse.")
-    parser.add_argument("-f", "--filename", required=True, help="filename to save network in")
+    parser.add_argument("-o", "--open", required=False, help="filename of network to open for use.")
+    parser.add_argument("-e", "--export", required=False, help="filename to save network in")
     args = parser.parse_args()
     
     filename = args.filename
