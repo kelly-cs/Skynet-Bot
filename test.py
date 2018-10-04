@@ -11,20 +11,19 @@ def obstacle():
             point.append(i)
             obstacles.append(point)
                     
-            
-        for l in range(0,21):
+        for l in range(1,21):
             point = []
             point.append(l)
             point.append(0)
             obstacles.append(point)
 
-        for k in range(0,21):
+        for k in range(1,21):
             point = []
             point.append(20)
             point.append(k)
             obstacles.append(point)
 
-        for x in range(0,21):
+        for x in range(1,20):
             point = []
             point.append(x)
             point.append(20)
@@ -34,5 +33,5 @@ def obstacle():
        
 
 if __name__ == "__main__":
-    print (obstacle())
+    obstacle()
     

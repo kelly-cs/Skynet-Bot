@@ -1,5 +1,5 @@
 '''
-Skynet Bot 1.01
+Skynet Bot 1.00
 
 This is an initial test for the Skynet Bot program. It is using an initial game template for neural network
 design from here: https://towardsdatascience.com/today-im-going-to-talk-about-a-small-practical-example-of-using-neural-networks-training-one-to-6b2cbd6efdb3
@@ -7,10 +7,10 @@ design from here: https://towardsdatascience.com/today-im-going-to-talk-about-a-
 Attribution for this goes to Slava Korolev.
 
 
-We will be first testing a VERY basic neural network that implements 1 feature: Survive. 
+We will be first testing a VERY basic neural network that implements 1 feature: Survive.
 
 This will result in tuples being paired without a "hidden layer", or neurons. It essentially results
-in 4 inputs having one desirable output, with no variation. We will introduce more complex variations 
+in 4 inputs having one desirable output, with no variation. We will introduce more complex variations
 in a future iteration (in the form of food, that randomly generates, or randomly generated obstacles, or
 competing AIs.)
 
@@ -32,14 +32,19 @@ class SnakeGame:
         self.done = False
         self.board = {'width': board_width, 'height': board_height}
         self.gui = gui
-    
+        self.obastacles = []
+
+
     '''
     The start function is called after the SnakeGame object is created, by main. It initializes the
-    Snake into the SnakeGame, and generates food. 
+    Snake into the SnakeGame, and generates food.
     '''
     def start(self):
         self.snake_init()
         self.generate_food()
+        '''
+        self.initialize_obstacles()
+        '''
         if self.gui: self.render_init()
         return self.generate_observations()
     '''
@@ -54,7 +59,7 @@ class SnakeGame:
         for i in range(3): # 3 is the initial size of the snake.
             point = [x + i, y] if vertical else [x, y + i]
             self.snake.insert(0, point)
-    
+
     '''
     Creates the food on the map. Every time this function is ran, an apple will be created at
     a random position within bounds.
@@ -62,9 +67,13 @@ class SnakeGame:
     def generate_food(self):
         food = []
         while food == []:
+            '''
             food = [randint(1, self.board["width"]), randint(1, self.board["height"])]
+            '''
+            food = [1,1]
             if food in self.snake: food = []
         self.food = food
+
 
     '''
     This initializes a curses window. We should look into how this works (research CURSES.)
@@ -77,9 +86,9 @@ class SnakeGame:
         win.timeout(200)
         self.win = win
         self.render()
-        
+
     '''
-    This re-renders the screen with each game step. 
+    This re-renders the screen with each game step.
     '''
     def render(self):
         self.win.clear()
@@ -93,8 +102,9 @@ class SnakeGame:
                 self.win.addch(point[0], point[1], 'x')
         self.win.getch()
 
+
     '''
-    This function generates a movement for the snake, called a "step". 
+    This function generates a movement for the snake, called a "step".
     '''
     def step(self, key):
         # 0 - UP
@@ -112,10 +122,10 @@ class SnakeGame:
         if self.gui: self.render()
         return self.generate_observations()
 
-    
+
     '''
     This function adds a new point for the next movement of the snake. This new point will be the head
-    of the snake. 
+    of the snake.
     '''
     def create_new_point(self, key):
         new_point = [self.snake[0][0], self.snake[0][1]]
@@ -137,11 +147,12 @@ class SnakeGame:
 
     def check_collisions(self):
         if (self.snake[0][0] == 0 or
-            self.snake[0][0] == self.board["width"] + 1 or
+            self.snake[0][0] == self.board["width"] or
             self.snake[0][1] == 0 or
-            self.snake[0][1] == self.board["height"] + 1 or
+            self.snake[0][1] == self.board["height"] or
             self.snake[0] in self.snake[1:-1]):
             self.done = True
+            self.end_game()
 
     def generate_observations(self):
         return self.done, self.score, self.snake, self.food
@@ -151,18 +162,59 @@ class SnakeGame:
 
     def end_game(self):
         if self.gui: self.render_destroy()
+        print ("Game Over")
         raise Exception("Game over")
+
+
+
+    '''
+    This is my attempt to create obstacles, and this is what I could think of
+    '''
+    def obstacles(self):
+        '''
+        The map is 2D array. The ranges are [0;20] and [-20;-20] horizontally
+        and [20;-20], [0;-20] vertically.
+        If the head of the snake (self.snake[0:0]) colides with any of the border, Game ends.
+        '''
+        for i in range(0, width+1):
+            point = []
+            point.append(0)
+            point.append(i)
+            self.obstacles.append(point)
+
+        for j in range(1, height):
+            point = []
+            point.append(j)
+            point.append(0)
+            self.obstacles.append(point)
+
+        for k in range(height +1, width +1):
+            point = []
+            point.append(height)
+            point.append(k)
+            self.obstacles.append(point)
+
+        for l in range(1, height+1):
+            point = []
+            point.append(l)
+            point.append(height)
+            self.obstacles.append(point)
+
+
+
+    '''
+    Suggesting directions for the snake to run away from the obstacles
+    '''
 
 if __name__ == "__main__":
     game = SnakeGame(gui = True)
     game.start()
     try:
         for _ in range(100):
-            game.step(randint(0,3)) # if this is ran as its own program, it will just do random stuff.
+            game.step(randint(0,3))
         exit()
     except Exception as e:
         try:
             print(e.message)
         except:
             print("An unknown error occurred.")
-            
