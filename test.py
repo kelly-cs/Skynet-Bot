@@ -5,7 +5,7 @@ def obstacle():
         If the head of the snake (self.snake[0:0]) colides with any of the border, Game ends.
         '''
         obstacles = []
-        for i in range(0, 21):
+        for i in range(0,21):
             point = []
             point.append(0)
             point.append(i)
@@ -16,6 +16,18 @@ def obstacle():
             point = []
             point.append(l)
             point.append(0)
+            obstacles.append(point)
+
+        for k in range(0,21):
+            point = []
+            point.append(20)
+            point.append(k)
+            obstacles.append(point)
+
+        for x in range(0,21):
+            point = []
+            point.append(x)
+            point.append(20)
             obstacles.append(point)
 
         print (obstacles)
