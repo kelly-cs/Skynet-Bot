@@ -170,5 +170,4 @@ class SnakeNN:
         self.test_model(nn_model)
 
 if __name__ == "__main__":
-    SnakeNN().train()
     SnakeNN().visualise()
