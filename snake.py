@@ -1,5 +1,5 @@
 '''
-Skynet Bot 1.00
+Skynet Bot 1.01
 
 This is an initial test for the Skynet Bot program. It is using an initial game template for neural network
 design from here: https://towardsdatascience.com/today-im-going-to-talk-about-a-small-practical-example-of-using-neural-networks-training-one-to-6b2cbd6efdb3
