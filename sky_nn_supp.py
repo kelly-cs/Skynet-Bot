@@ -26,3 +26,16 @@ def yes_or_no(question):
         return False
     else:
         return yes_or_no("Uhhhh... please enter ")
+        
+        
+def green(str):
+    return(Fore_GREEN + str + Fore_WHITE)
+
+def red(str):
+    return(Fore_RED + str + Fore_WHITE)
+
+def yellow(str):
+    return(Fore_YELLOW + str + Fore_WHITE)
+    
+def cyan(str):
+    return(Fore_CYAN + str + Fore_WHITE)

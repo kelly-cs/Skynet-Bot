@@ -55,7 +55,8 @@ class SkyNN:
         return -1
     
     # ask the model to make a decision given particular observations to plug into the model.
-    def make_decision(self, model, observations):
+    def make_decision(self, model, observations, possible_actions):
+        # put the observations into the model, concatenated with each possible action. Return the best ranked result.
         return -1
         
         
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     
     #create the neural network
     #nn = SkyNN()
-    print(forecolors[randint(0,7)] + """
+    print(forecolors[randint(0,6)] + """
               _          _   _ _   _ 
              | |        | \ | | \ | |
           ___| | ___   _|  \| |  \| |
@@ -108,48 +109,49 @@ if __name__ == "__main__":
     
     
     if(args.train): # from an existing model, adjust weights through training.
-        print("Loading Training Session on existing NN with the Following Parameters:")
-        print("Neural Net Model: " + args.train[0])
-        print("Training Data: " + args.train[1])
-        print("Output Model: " + args.train[2])
+        print("Loading " + yellow("Training Session") + " on existing NN with the Following Parameters:")
+        print(cyan("Neural Net Model: ") + args.train[0])
+        print(cyan("Training Data: ") + args.train[1])
+        print(cyan("Output Model: ") + args.train[2])
         print("--Training Parameters [can be changed in args]--")
-        print("Activation: " + args.activation)
-        print("Optimizer: " + args.optimizer)
-        print("Learning Rate: " + str(args.learn_rate))
-        print("Loss Function: " + args.loss)
+        print(cyan("Activation: ") + args.activation)
+        print(cyan("Optimizer: ") + args.optimizer)
+        print(cyan("Learning Rate: ") + str(args.learn_rate))
+        print(cyan("Loss Function: ") + args.loss)
+        print(cyan("GUI: ") + str(args.gui))
         if(yes_or_no("Proceed?")):
             print("proceeding with training...")
     elif(args.model): # from a dataset, create an initial model.
-        print("Creating an Initial Model/Train Session with the Following Parameters:")
-        print("Dataset: " + args.model[0])
-        print("Output Model: " + args.model[1])
+        print("Creating an " + yellow("Initial Model/Train Session") + " with the Following Parameters:")
+        print(cyan("Dataset: ") + args.model[0])
+        print(cyan("Output Model: ") + args.model[1])
         print("--Training Parameters [can be changed in args]--")
-        print("Activation: " + args.activation)
-        print("Optimizer: " + args.optimizer)
-        print("Learning Rate: " + str(args.learn_rate))
-        print("Loss Function: " + args.loss)
-        print("GUI: " + str(args.gui))
+        print(cyan("Activation: ") + args.activation)
+        print(cyan("Optimizer: ") + args.optimizer)
+        print(cyan("Learning Rate: ") + str(args.learn_rate))
+        print(cyan("Loss Function: ") + args.loss)
+        print(cyan("GUI: ") + str(args.gui))
         if(yes_or_no("Proceed?")):
             print("proceeding with training...")
     elif(args.data_generate): # create an initial dataset by randomly performing in-game actions, or from recorded user actions.
-        print("Randomly Creating an Initial Dataset with the Following Parameters:")
+        print(yellow("Randomly Creating an Initial Dataset") + " with the Following Parameters:")
         print("Output Dataset: " + args.data_generate[0])
         print("Total Iterations: " + str(args.data_generate[1]))
         #print("Epochs (model checkpoint saves): " + args.data_generate[2])
         print("--Training Parameters [can be changed in args]--")
-        print("Random Actions: True")
+        print(cyan("Random Actions: ") + "True")
         if(yes_or_no("Proceed?")):
             print("proceeding with training...")             
     elif(args.test):
-        print("Starting a Test session to See Performance of NN with the Following Parameters:")
-        print("Model: " + args.test[0])
-        print("# of tests: " + str(args.test[1]))
+        print("Starting a " + yellow("Test session") + " to See Performance of NN with the Following Parameters:")
+        print(cyan("Model: ") + args.test[0])
+        print(cyan("# of tests: ") + str(args.test[1]))
         print("--Training Parameters [can be changed in args]--")
-        print("Activation: " + args.activation)
-        print("Optimizer: " + args.optimizer)
-        print("Learning Rate: " + str(args.learn_rate))
-        print("Loss Function: " + args.loss)
-        print("GUI: " + str(args.gui))
+        print(cyan("Activation: ") + args.activation)
+        print(cyan("Optimizer: ") + args.optimizer)
+        print(cyan("Learning Rate: ") + str(args.learn_rate))
+        print(cyan("Loss Function: ") + args.loss)
+        print(cyan("GUI: ") + str(args.gui))
         if(yes_or_no("Proceed?")):
             print("proceeding with training...")
 
