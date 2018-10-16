@@ -1,5 +1,5 @@
 '''
-Skynet Bot Neural Network System v1.01
+Skynet Bot Neural Network System v0.02
 
 This utilizes tflearn based on Tensor Flow for Python 3.6
 
@@ -29,6 +29,7 @@ from snake import SnakeGame
 from random import randint
 import numpy as np
 import tflearn
+from sky_nn_supp import *
 import math
 import argparse
 from tflearn.layers.core import input_data, fully_connected
@@ -37,13 +38,27 @@ from statistics import mean
 from collections import Counter
 
 class SkyNN:
-    def __init__(self, initial_games, test_games, goal_steps, lr, filename = 'snake_nn3.tflearn'):
-            self.initial_games = initial_games
-            self.test_games = test_games
-            self.goal_steps = goal_steps
-            self.lr = lr
-            self.filename = filename
+    def __init__(self, test_iterations, lr, dataset, model, model_saveas, app, app_communication):
+            self.app = self.app # this is the game that we will be communicating with.
+            self.app_communication = app_communication # this will be a communication mode between the app and the SkyNN generator.
+            self.test_iterations = test_iterations # type: int [amt of iterations to run for testing]
+            self.lr = lr # type: float [learning rate of NN]
+            self.dataset = dataset # type: string [filename]
+            self.model = model # type: NN Model [already loaded by TFLearn]
+            self.model_saveas = model_saveas # type: string [filename] to export resulting NN into.
     
+
+    def get_list_of_possible_actions(self, app):
+        return -1
+            
+    def generate_random_action(self, action_list):
+        return -1
+    
+    # ask the model to make a decision given particular observations to plug into the model.
+    def make_decision(self, model, observations):
+        return -1
+        
+        
     def init_data_population(self, iterations):
         output_data = [] # this is the list of results that will be exported.
         for i in range(0,iterations):
@@ -52,16 +67,10 @@ class SkyNN:
             # generate observations
         return output_data
         
+
     def train(self, nn_model, test_data):
         print("training complete.")
     
-    
-    def generate_random_action(self):
-        return -1
-        
-    # ask the model to make a decision given particular observations to plug into the model.
-    def make_decision(self, model, observations):
-        return -1
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Enter a filename to parse.")
@@ -84,17 +93,21 @@ if __name__ == "__main__":
     
     #create the neural network
     #nn = SkyNN()
-    print("""
-          _                     _   
-         | |                   | |  
-      ___| | ___   _ _ __   ___| |_ 
-     / __| |/ / | | | '_ \ / _ \ __|
-     \__ \   <| |_| | | | |  __/ |_ 
-     |___/_|\_\\__,  |_| |_|\___|\__|
-                __/ |               
-               |___/    
-    """)           
-    if(args.train):
+    print(forecolors[randint(0,7)] + """
+              _          _   _ _   _ 
+             | |        | \ | | \ | |
+          ___| | ___   _|  \| |  \| |
+         / __| |/ / | | | . ` | . ` |
+         \__ \   <| |_| | |\  | |\  |
+         |___/_|\_\\__,  |_| \_|_| \_|
+                    __/ |            
+                   |___/             
+                                v0.02
+    """ + forecolors[6])
+    
+    
+    
+    if(args.train): # from an existing model, adjust weights through training.
         print("Loading Training Session on existing NN with the Following Parameters:")
         print("Neural Net Model: " + args.train[0])
         print("Training Data: " + args.train[1])
@@ -104,7 +117,9 @@ if __name__ == "__main__":
         print("Optimizer: " + args.optimizer)
         print("Learning Rate: " + str(args.learn_rate))
         print("Loss Function: " + args.loss)
-    elif(args.model):
+        if(yes_or_no("Proceed?")):
+            print("proceeding with training...")
+    elif(args.model): # from a dataset, create an initial model.
         print("Creating an Initial Model/Train Session with the Following Parameters:")
         print("Dataset: " + args.model[0])
         print("Output Model: " + args.model[1])
@@ -114,22 +129,34 @@ if __name__ == "__main__":
         print("Learning Rate: " + str(args.learn_rate))
         print("Loss Function: " + args.loss)
         print("GUI: " + str(args.gui))
-    elif(args.data_generate):
-        print("Creating an Initial Dataset with the Following Parameters:")
+        if(yes_or_no("Proceed?")):
+            print("proceeding with training...")
+    elif(args.data_generate): # create an initial dataset by randomly performing in-game actions, or from recorded user actions.
+        print("Randomly Creating an Initial Dataset with the Following Parameters:")
         print("Output Dataset: " + args.data_generate[0])
-        print("Total Iterations: " + args.data_generate[1])
+        print("Total Iterations: " + str(args.data_generate[1]))
         #print("Epochs (model checkpoint saves): " + args.data_generate[2])
         print("--Training Parameters [can be changed in args]--")
         print("Random Actions: True")
+        if(yes_or_no("Proceed?")):
+            print("proceeding with training...")             
     elif(args.test):
         print("Starting a Test session to See Performance of NN with the Following Parameters:")
         print("Model: " + args.test[0])
+        print("# of tests: " + str(args.test[1]))
         print("--Training Parameters [can be changed in args]--")
         print("Activation: " + args.activation)
         print("Optimizer: " + args.optimizer)
         print("Learning Rate: " + str(args.learn_rate))
         print("Loss Function: " + args.loss)
         print("GUI: " + str(args.gui))
+        if(yes_or_no("Proceed?")):
+            print("proceeding with training...")
+
+    else:
+        print("No operations performed. Invalid or No useful args provided. See USAGE")
         
+    print("Quitting...")
+    exit()
         
         

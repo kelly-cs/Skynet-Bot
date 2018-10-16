@@ -99,7 +99,7 @@ class SnakeNN:
         return np.array([vector[1], -vector[0]])
 
     def model(self):
-        network = input_data(shape=[None, 4, 1], name='input')
+        network = input_data(shape=[None, 4, 1], name='input') # sensor layer
         network = fully_connected(network, 1, activation='linear') # one single neuron
         network = regression(network, optimizer='adam', learning_rate=self.lr, loss='mean_square', name='target')
         model = tflearn.DNN(network, tensorboard_dir='log')
