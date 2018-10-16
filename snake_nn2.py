@@ -46,12 +46,15 @@ class SnakeNN:
                     break
                 else:
                     food_distance = self.get_food_distance(snake, food)
-                    if score > prev_score or food_distance < prev_food_distance:
-                        training_data.append([self.add_action_to_observation(prev_observation, action), 1])
+                    if score > prev_score or food_distance < prev_food_distance: # did you get closer to the objective?
+                        training_data.append([self.add_action_to_observation(prev_observation, action), 1]) # label as good decision.
                     else:
-                        training_data.append([self.add_action_to_observation(prev_observation, action), 0])
+                        training_data.append([self.add_action_to_observation(prev_observation, action), 0]) # label as bad decision.
                     prev_observation = self.generate_observation(snake, food)
                     prev_food_distance = food_distance
+                    '''
+                    Later we will be using this "1" or "0" to provide estimates for each possible decision. 
+                    '''
         return training_data
 
     def generate_action(self, snake):
@@ -110,9 +113,14 @@ class SnakeNN:
         return math.atan2(a[0] * b[1] - a[1] * b[0], a[0] * b[0] + a[1] * b[1]) / math.pi
 
     def model(self):
-        network = input_data(shape=[None, 5, 1], name='input')
+        network = input_data(shape=[None, 5, 1], name='input') # shape of data [left, forward, right, angle, 
+        
+        # Activation and Regularization inside a layer:
         network = fully_connected(network, 25, activation='relu') # hidden layer neurons
-        network = fully_connected(network, 1, activation='linear') # hidden layer neurons 
+        # Equivalent to:
+        network = fully_connected(network, 1, activation='linear') # hidden layer neurons
+        
+        # Optimizer, Objective and Metric:        
         network = regression(network, optimizer='adam', learning_rate=self.lr, loss='mean_square', name='target')
         model = tflearn.DNN(network, tensorboard_dir='log')
         return model
@@ -135,10 +143,10 @@ class SnakeNN:
             prev_observation = self.generate_observation(snake, food)
             for _ in range(self.goal_steps):
                 predictions = []
-                for action in range(-1, 2):
+                for action in range(-1, 2): # iterate through each possible decision
                    predictions.append(model.predict(self.add_action_to_observation(prev_observation, action).reshape(-1, 5, 1)))
-                action = np.argmax(np.array(predictions))
-                game_action = self.get_game_action(snake, action - 1)
+                action = np.argmax(np.array(predictions)) # choose decision with highest value (1)
+                game_action = self.get_game_action(snake, action - 1) # perform action in the game. 
                 done, score, snake, food  = game.step(game_action)
                 game_memory.append([prev_observation, action])
                 if done:
@@ -159,15 +167,15 @@ class SnakeNN:
         print('Average score:',mean(scores_arr))
         print(Counter(scores_arr))
 
-    def visualise_game(self, model):
+    def visualize_game(self, model):
         game = SnakeGame(gui = True)
         _, _, snake, food = game.start()
         prev_observation = self.generate_observation(snake, food)
         for _ in range(self.goal_steps):
-            precictions = []
+            predictions = []
             for action in range(-1, 2):
-               precictions.append(model.predict(self.add_action_to_observation(prev_observation, action).reshape(-1, 5, 1)))
-            action = np.argmax(np.array(precictions))
+               predictions.append(model.predict(self.add_action_to_observation(prev_observation, action).reshape(-1, 5, 1)))
+            action = np.argmax(np.array(predictions))
             game_action = self.get_game_action(snake, action - 1)
             done, _, snake, food  = game.step(game_action)
             if done:
@@ -181,10 +189,10 @@ class SnakeNN:
         nn_model = self.train_model(training_data, nn_model) # train from data collected, store into model 
         self.test_model(nn_model)
 
-    def visualise(self):
+    def visualize(self):
         nn_model = self.model()
         nn_model.load(self.filename)
-        self.visualise_game(nn_model)
+        self.visualize_game(nn_model)
 
     def test(self):
         nn_model = self.model()
@@ -192,4 +200,4 @@ class SnakeNN:
         self.test_model(nn_model)
 
 if __name__ == "__main__":
-    SnakeNN().test()
+    SnakeNN().train()
