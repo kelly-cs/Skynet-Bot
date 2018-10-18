@@ -57,9 +57,14 @@ class SkyNN:
     # ask the model to make a decision given particular observations to plug into the model.
     def make_decision(self, model, observations, possible_actions):
         # put the observations into the model, concatenated with each possible action. Return the best ranked result.
+        # for each possible action
+        #   predict(observations + possible_action appended)
+        #   perform action with highest value
         return -1
         
         
+    # it is best for games to output their own datasets, and import that data, instead of
+    # trying to accomodate the SkyNN system to randomly generate data automatically, in most instances.
     def init_data_population(self, iterations):
         output_data = [] # this is the list of results that will be exported.
         for i in range(0,iterations):

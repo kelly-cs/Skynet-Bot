@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface>
+  <object class="ttk.Frame" id="Frame_1">
+    <property name="borderwidth">3</property>
+    <property name="height">200</property>
+    <property name="padding">3</property>
+    <property name="relief">raised</property>
+    <property name="width">100</property>
+    <layout>
+      <property name="column">0</property>
+      <property name="propagate">True</property>
+      <property name="row">0</property>
+      <rows>
+        <row id="0">
+          <property name="minsize">75</property>
+          <property name="pad">0</property>
+        </row>
+        <row id="1">
+          <property name="minsize">0</property>
+          <property name="pad">0</property>
+        </row>
+        <row id="2">
+          <property name="minsize">0</property>
+        </row>
+        <row id="3">
+          <property name="pad">20</property>
+          <property name="weight">0</property>
+        </row>
+        <row id="4">
+          <property name="minsize">25</property>
+          <property name="pad">0</property>
+          <property name="weight">0</property>
+        </row>
+      </rows>
+    </layout>
+    <child>
+      <object class="ttk.Label" id="SkyNN">
+        <property name="font">{Georgia} 36 {}</property>
+        <property name="padding">0</property>
+        <property name="text" translatable="yes">SkyNN</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Message" id="version">
+        <property name="borderwidth">0</property>
+        <property name="justify">right</property>
+        <property name="padx">0</property>
+        <property name="pady">0</property>
+        <property name="text" translatable="yes">v0.02</property>
+        <property name="width">40</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+          <property name="sticky">se</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Message" id="greetmsg">
+        <property name="text" translatable="yes">A neural network generation toolkit for generic applications.</property>
+        <property name="width">200</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="initcredits">
+        <property name="text" translatable="yes">See http://www.github.com/Likai-CK/Skynet-Bot/</property>
+        <layout>
+          <property name="column">1</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">True</property>
+          <property name="row">2</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="train">
+        <property name="text" translatable="yes">Train NN</property>
+        <layout>
+          <property name="column">3</property>
+          <property name="propagate">True</property>
+          <property name="row">2</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="start">
+        <property name="text" translatable="yes">Start From Scratch</property>
+        <layout>
+          <property name="column">3</property>
+          <property name="padx">20</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="test">
+        <property name="text" translatable="yes">Test NN</property>
+        <layout>
+          <property name="column">3</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>
