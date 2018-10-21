@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <interface>
-  <object class="ttk.Frame" id="Frame_1">
+  <object class="ttk.Frame" id="WelcomingScreen">
     <property name="borderwidth">3</property>
     <property name="height">200</property>
     <property name="padding">3</property>
@@ -21,15 +21,6 @@
         </row>
         <row id="2">
           <property name="minsize">0</property>
-        </row>
-        <row id="3">
-          <property name="pad">20</property>
-          <property name="weight">0</property>
-        </row>
-        <row id="4">
-          <property name="minsize">25</property>
-          <property name="pad">0</property>
-          <property name="weight">0</property>
         </row>
       </rows>
     </layout>
@@ -88,6 +79,7 @@
     </child>
     <child>
       <object class="ttk.Button" id="train">
+        <property name="command">on_train_clicked</property>
         <property name="text" translatable="yes">Train NN</property>
         <layout>
           <property name="column">3</property>
@@ -98,7 +90,13 @@
     </child>
     <child>
       <object class="ttk.Button" id="start">
+        <property name="command">on_start_clicked</property>
+        <property name="cursor">arrow</property>
+        <property name="default">active</property>
+        <property name="state">normal</property>
         <property name="text" translatable="yes">Start From Scratch</property>
+        <property name="underline">0</property>
+        <bind add="" handler="callback" sequence="" />
         <layout>
           <property name="column">3</property>
           <property name="padx">20</property>
@@ -109,6 +107,9 @@
     </child>
     <child>
       <object class="ttk.Button" id="test">
+        <property name="command">on_test_clicked</property>
+        <property name="cursor">based_arrow_down</property>
+        <property name="takefocus">true</property>
         <property name="text" translatable="yes">Test NN</property>
         <layout>
           <property name="column">3</property>
@@ -117,5 +118,13 @@
         </layout>
       </object>
     </child>
+  </object>
+  <object class="tk.Toplevel" id="Test NN">
+    <property name="height">200</property>
+    <property name="width">200</property>
+  </object>
+  <object class="tk.Toplevel" id="Train NN">
+    <property name="height">200</property>
+    <property name="width">200</property>
   </object>
 </interface>
