@@ -138,6 +138,9 @@ if __name__ == "__main__":
         print(cyan("GUI: ") + str(args.gui))
         if(yes_or_no("Proceed?")):
             print("proceeding with training...")
+            
+    # This may not follow in with the final version, as it exceeds the scope of the project a bit. 
+    # Getting training data should be the responsibility of the coder/developer and not for the NN.
     elif(args.data_generate): # create an initial dataset by randomly performing in-game actions, or from recorded user actions.
         print(yellow("Randomly Creating an Initial Dataset") + " with the Following Parameters:")
         print("Output Dataset: " + args.data_generate[0])
