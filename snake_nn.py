@@ -155,8 +155,8 @@ class SnakeNN:
 
     def train(self):
         training_data = self.initial_population() #using initial_games data
-        nn_model = self.model()
-        nn_model = self.train_model(training_data, nn_model)
+        nn_model = self.model() # plots a model onto the initial_games data
+        nn_model = self.train_model(training_data, nn_model) 
         self.test_model(nn_model)
 
     def visualise(self):

@@ -35,7 +35,7 @@ class SnakeNN:
         training_data = []
         for _ in range(self.initial_games):
             game = SnakeGame()
-            _, prev_score, snake, food = game.start()
+            _, prev_score, snake, food = game.start() # returns generate_observation from snake game.
             prev_observation = self.generate_observation(snake, food)
             prev_food_distance = self.get_food_distance(snake, food)
             for _ in range(self.goal_steps):
