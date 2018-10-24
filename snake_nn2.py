@@ -41,6 +41,8 @@ class SnakeNN:
             for _ in range(self.goal_steps):
                 action, game_action = self.generate_action(snake)
                 done, score, snake, food  = game.step(game_action)
+                print(training_data)
+                input("test")
                 if done:
                     training_data.append([self.add_action_to_observation(prev_observation, action), -1])
                     break
@@ -185,6 +187,8 @@ class SnakeNN:
 
     def train(self):
         training_data = self.initial_population() # create data 
+        #print(training_data)
+        input("hi")
         nn_model = self.model() # create empty model
         nn_model = self.train_model(training_data, nn_model) # train from data collected, store into model 
         self.test_model(nn_model)
