@@ -35,14 +35,14 @@ class SnakeNN:
         training_data = []
         for _ in range(self.initial_games):
             game = SnakeGame()
-            _, prev_score, snake, food = game.start() # returns generate_observation from snake game.
-            prev_observation = self.generate_observation(snake, food)
+            _, prev_score, snake, food, obstacles = game.start() # returns generate_observation from snake game.
+            prev_observation = self.generate_observation(snake, food, obstacles)
             prev_food_distance = self.get_food_distance(snake, food)
             for _ in range(self.goal_steps):
                 action, game_action = self.generate_action(snake)
-                done, score, snake, food  = game.step(game_action)
-                print(training_data)
-                input("test")
+                done, score, snake, food, obstacles  = game.step(game_action)
+                #print(training_data)
+                #input("test")
                 if done:
                     training_data.append([self.add_action_to_observation(prev_observation, action), -1])
                     break
@@ -52,7 +52,7 @@ class SnakeNN:
                         training_data.append([self.add_action_to_observation(prev_observation, action), 1]) # label as good decision.
                     else:
                         training_data.append([self.add_action_to_observation(prev_observation, action), 0]) # label as bad decision.
-                    prev_observation = self.generate_observation(snake, food)
+                    prev_observation = self.generate_observation(snake, food, obstacles)
                     prev_food_distance = food_distance
                     '''
                     Later we will be using this "1" or "0" to provide estimates for each possible decision. 
@@ -75,12 +75,12 @@ class SnakeNN:
                 game_action = pair[1]
         return game_action
 
-    def generate_observation(self, snake, food):
+    def generate_observation(self, snake, food, obstacles):
         snake_direction = self.get_snake_direction_vector(snake)
         food_direction = self.get_food_direction_vector(snake, food)
-        barrier_left = self.is_direction_blocked(snake, self.turn_vector_to_the_left(snake_direction))
-        barrier_front = self.is_direction_blocked(snake, snake_direction)
-        barrier_right = self.is_direction_blocked(snake, self.turn_vector_to_the_right(snake_direction))
+        barrier_left = self.is_direction_blocked(snake, self.turn_vector_to_the_left(snake_direction), obstacles)
+        barrier_front = self.is_direction_blocked(snake, snake_direction, obstacles)
+        barrier_right = self.is_direction_blocked(snake, self.turn_vector_to_the_right(snake_direction), obstacles)
         angle = self.get_angle(snake_direction, food_direction)
         return np.array([int(barrier_left), int(barrier_front), int(barrier_right), angle])
 
@@ -99,9 +99,9 @@ class SnakeNN:
     def get_food_distance(self, snake, food):
         return np.linalg.norm(self.get_food_direction_vector(snake, food))
 
-    def is_direction_blocked(self, snake, direction):
+    def is_direction_blocked(self, snake, direction, obstacles):
         point = np.array(snake[0]) + np.array(direction)
-        return point.tolist() in snake[:-1] or point[0] == 0 or point[1] == 0 or point[0] == 21 or point[1] == 21
+        return(point.tolist() in snake[:-1] or point[0] == 0 or point[1] == 0 or point[0] == 21 or point[1] == 21 or (point.tolist() in obstacles))
 
     def turn_vector_to_the_left(self, vector):
         return np.array([-vector[1], vector[0]])
@@ -141,15 +141,15 @@ class SnakeNN:
             steps = 0
             game_memory = []
             game = SnakeGame()
-            _, score, snake, food = game.start()
-            prev_observation = self.generate_observation(snake, food)
+            _, score, snake, food, obstacles = game.start()
+            prev_observation = self.generate_observation(snake, food, obstacles)
             for _ in range(self.goal_steps):
                 predictions = []
                 for action in range(-1, 2): # iterate through each possible decision
                    predictions.append(model.predict(self.add_action_to_observation(prev_observation, action).reshape(-1, 5, 1)))
                 action = np.argmax(np.array(predictions)) # choose decision with highest value (1)
                 game_action = self.get_game_action(snake, action - 1) # perform action in the game. 
-                done, score, snake, food  = game.step(game_action)
+                done, score, snake, food, obstacles  = game.step(game_action)
                 game_memory.append([prev_observation, action])
                 if done:
                     print('-----')
@@ -160,7 +160,7 @@ class SnakeNN:
                     print(predictions)
                     break
                 else:
-                    prev_observation = self.generate_observation(snake, food)
+                    prev_observation = self.generate_observation(snake, food, obstacles)
                     steps += 1
             steps_arr.append(steps)
             scores_arr.append(score)
@@ -171,24 +171,24 @@ class SnakeNN:
 
     def visualize_game(self, model):
         game = SnakeGame(gui = True)
-        _, _, snake, food = game.start()
-        prev_observation = self.generate_observation(snake, food)
+        _, _, snake, food, obstacles = game.start()
+        prev_observation = self.generate_observation(snake, food, obstacles)
         for _ in range(self.goal_steps):
             predictions = []
             for action in range(-1, 2):
                predictions.append(model.predict(self.add_action_to_observation(prev_observation, action).reshape(-1, 5, 1)))
             action = np.argmax(np.array(predictions))
             game_action = self.get_game_action(snake, action - 1)
-            done, _, snake, food  = game.step(game_action)
+            done, _, snake, food, obstacles = game.step(game_action)
             if done:
                 break
             else:
-                prev_observation = self.generate_observation(snake, food)
+                prev_observation = self.generate_observation(snake, food, obstacles)
 
     def train(self):
         training_data = self.initial_population() # create data 
         #print(training_data)
-        input("hi")
+        #input("hi")
         nn_model = self.model() # create empty model
         nn_model = self.train_model(training_data, nn_model) # train from data collected, store into model 
         self.test_model(nn_model)
@@ -204,4 +204,4 @@ class SnakeNN:
         self.test_model(nn_model)
 
 if __name__ == "__main__":
-    SnakeNN().train()
+    SnakeNN().visualize()

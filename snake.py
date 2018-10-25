@@ -7,13 +7,22 @@ class SnakeGame:
         self.done = False
         self.board = {'width': board_width, 'height': board_height}
         self.gui = gui
-
+        self.obstacles = []
+        
     def start(self):
         self.snake_init()
         self.generate_food()
+        self.generate_obstacles()
         if self.gui: self.render_init()
         return self.generate_observations()
-
+        
+    def generate_obstacles(self):
+        self.obstacles.append([2,3])
+        self.obstacles.append([4,3])
+        self.obstacles.append([14,6])
+        self.obstacles.append([15,3])
+        self.obstacles.append([10,15])
+        
     def snake_init(self):
         x = randint(5, self.board["width"] - 5)
         y = randint(5, self.board["height"] - 5)
@@ -28,6 +37,7 @@ class SnakeGame:
         while food == []:
             food = [randint(1, self.board["width"]), randint(1, self.board["height"])]
             if food in self.snake: food = []
+            if food in self.obstacles: food = []
         self.food = food
 
     def render_init(self):
@@ -43,6 +53,9 @@ class SnakeGame:
         self.win.clear()
         self.win.border(0)
         self.win.addstr(0, 2, 'Score : ' + str(self.score) + ' ')
+        for i in self.obstacles:
+            self.win.addch(i[0], i[1], '#')
+                
         self.win.addch(self.food[0], self.food[1], 'o')
         for i, point in enumerate(self.snake):
             if i == 0:
@@ -90,18 +103,20 @@ class SnakeGame:
             self.snake[0][0] == self.board["width"] + 1 or
             self.snake[0][1] == 0 or
             self.snake[0][1] == self.board["height"] + 1 or
-            self.snake[0] in self.snake[1:-1]):
+            self.snake[0] in self.snake[1:-1] or
+            self.snake[0] in self.obstacles):
             self.done = True
 
     def generate_observations(self):
-        return self.done, self.score, self.snake, self.food
+        return self.done, self.score, self.snake, self.food, self.obstacles
 
     def render_destroy(self):
         curses.endwin()
 
     def end_game(self):
-        if self.gui: self.render_destroy()
-        raise Exception("Game over")
+        if self.gui:
+            render_destroy()
+            exit()
 
 if __name__ == "__main__":
     game = SnakeGame(gui = True)

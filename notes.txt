@@ -39,4 +39,4 @@ self.snake is important
 
 Training_data is laid out as:
 
-[[nparray( action taken, observation1, observation2, obs3, obs4, etc...), RESULT]] 
+[[nparray( action taken, observation1, observation2, obs3, obs4, etc...), RESULT OF ACTION]] 
