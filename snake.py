@@ -23,6 +23,11 @@ class SnakeGame:
         self.obstacles.append([15,3])
         self.obstacles.append([10,15])
         
+        self.obstacles.append([11,16])
+        self.obstacles.append([9,4])
+        self.obstacles.append([18,7])
+        self.obstacles.append([7,3])
+        
     def snake_init(self):
         x = randint(5, self.board["width"] - 5)
         y = randint(5, self.board["height"] - 5)
