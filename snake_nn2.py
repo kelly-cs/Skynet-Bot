@@ -128,8 +128,8 @@ class SnakeNN:
         return model
 
     def train_model(self, training_data, model):
-        X = np.array([i[0] for i in training_data]).reshape(-1, 5, 1)
-        y = np.array([i[1] for i in training_data]).reshape(-1, 1)
+        X = np.array([i[0] for i in training_data]).reshape(-1, 5, 1) # observations array
+        y = np.array([i[1] for i in training_data]).reshape(-1, 1) # fitness value
         model.fit(X,y, n_epoch = 3, shuffle = True, run_id = self.filename)
         model.save(self.filename)
         return model
