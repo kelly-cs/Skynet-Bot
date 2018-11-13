@@ -54,6 +54,7 @@ while in_progress:
         # acquire observations from game.
         OBSERVATION_LIST = get_observations()
         sock.sendto((json.dumps(OBSERVATION_LIST)).encode(), (CLIENT_IP, OUT_PORT)) # send observations to client
+        print("sent message " + str(OBSERVATION_LIST))
         data, addr = sock.recvfrom(1024) # we wait for client's response.
         # process the response, perform the action in-game.
         print ("received message: ", data.decode())

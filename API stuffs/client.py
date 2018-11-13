@@ -61,11 +61,6 @@ MSG_LIST = [0, 'Connecting...'] # connecting
 
 CURRENT_GAME_DATA = [] # list of all observation/action pairs for a game. When game completes, they will be paired with a goal value.
 
-
-
-print ("UDP target IP:", SERVER_IP)
-print ("UDP target port:", OUT_PORT)
-print ("message:", MESSAGE)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((CLIENT_IP, IN_PORT)) # bind the incoming data port.
 
@@ -82,6 +77,7 @@ while True: # while we're in the game loop
         print("data received:" + str(received_json))
         # acquire the action to take from our NN, format as a json list.
         sock.sendto((json.dumps(MSG_LIST)).encode(), (SERVER_IP, OUT_PORT)) # send our action to the server.
+        print("sending data: " + str(MSG_LIST))
         exit()
     except Exception as e:
         print("An Error has Occurred: " + str(e))
