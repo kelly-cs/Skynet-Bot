@@ -151,6 +151,9 @@ class SnakeNN:
                 game_action = self.get_game_action(snake, action - 1) # perform action in the game. 
                 done, score, snake, food, obstacles  = game.step(game_action)
                 game_memory.append([prev_observation, action])
+                print("PRINTING THE ACTION!")
+                print(action)
+                exit()
                 if done:
                     print('-----')
                     print(steps)
@@ -204,4 +207,4 @@ class SnakeNN:
         self.test_model(nn_model)
 
 if __name__ == "__main__":
-    SnakeNN().visualize()
+    SnakeNN().test()

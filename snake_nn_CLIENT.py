@@ -9,7 +9,7 @@ Supervised Learning
  We send lists to the GAME/SERVER 
 
  ACTION CODES WE SEND: 
- "connecting" - 0 
+ "connecting" - 0  // send this again AFTER you receive a 0 code from the Server to restart multiple games for training.
  "action" - 1
  "quitting" - 2
 
@@ -61,10 +61,10 @@ SERVER_IP = "127.0.0.1"
 IN_PORT = 50066 # The port we receive data from the game/server with. - IN
 OUT_PORT = 50055 # The port we send data to the game/server with. - OUT
 MSG_LIST = [0, 'Connecting...'] # connecting
+active = True
 
 CURRENT_GAME_DATA = [] # list of all observation/action pairs for a game. When game completes, they will be paired with a goal value.
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+MODE = 1 # MODES: 0 = Inactive, 1 = Data Population + Training (Supervised Learning), 2 = Model Testing
 sock.bind((CLIENT_IP, IN_PORT)) # bind the incoming data port.
 
 
@@ -73,14 +73,27 @@ print("Connecting to Game Server at: " + SERVER_IP + ":" + str(OUT_PORT) + "..."
 sock.sendto((json.dumps(MSG_LIST)).encode(), (SERVER_IP, OUT_PORT)) # inform the server we have connected.
 
 # game step loop
-while True: # while we're in the game loop
+while active: # while we're playing
     try:
         data, addr = sock.recvfrom(1024) # we wait for server's response.
         received_json = json.loads(data)
         print("data received:" + str(received_json))
-        # acquire the action to take from our NN, format as a json list.
-        sock.sendto((json.dumps(MSG_LIST)).encode(), (SERVER_IP, OUT_PORT)) # send our action to the server.
-        print("sending data: " + str(MSG_LIST))
+        
+        # If game is in progress, process data according to the mode we have selected.
+        if(received_json[0] == 1): # if game is in progress, process observations.
+            if(MODE == 1): # data population AND training mode (supervised learning)
+                # acquire the action to take from our NN, format as a json list.
+                MSG_LIST[0] = 1 # code to indicate we are sending an action [ see above ]
+                sock.sendto((json.dumps(MSG_LIST)).encode(), (SERVER_IP, OUT_PORT)) # send our action to the server.
+                print("sending data: " + str(MSG_LIST))
+            elif(MODE == 2): # Model Testing
+                
+                
+        # TESTING MODE - USES THE NN TO GENERATE ACTIONS
+        else:
+            print("The game server is not ready yet. Waiting...")
+        
+
         exit()
     except Exception as e:
         print("An Error has Occurred: " + str(e))
