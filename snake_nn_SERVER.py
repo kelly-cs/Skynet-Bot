@@ -20,7 +20,7 @@ CODES WE RECEIVE FROM CLIENT:
 CODES WE SEND:
 1 - game in process | send a list of observations with this code.
 0 - game is complete | pair with an extra value that indiciates how well the AI did.
--1 - game has not started | no extra data to send. Default state.
+-1 - not available | no extra data to send. Default state.
 
 
 '''
@@ -34,7 +34,7 @@ OBSERVATION_LIST = [-1]
 SEND_LIST = [-1]
 active = True
 game_counter = 1
-
+MODE = 1 # 0 = text, 1 = visualize
 
 # this will perform necessary steps to start the game and get it ready to perform, and return any values we will be manipulating.
 # will return these values as a list.
@@ -46,7 +46,10 @@ def start_game(game): # this s passed by reference, so us starting the game with
 while active:
     # Create a Game object and get it ready.
     print("Initializing the game.")
-    game = SnakeGame()
+    if(MODE == 1):
+        game = SnakeGame(gui = True)
+    elif(MODE == 0):
+        game = SnakeGame()
     print("Game initialized.")
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((SERVER_IP, IN_PORT)) # bind the incoming port. 
@@ -69,16 +72,18 @@ while active:
         try:
             # acquire observations from game, as a list.
             OBSERVATION_LIST = game.generate_observations_as_list()
-            SEND_LIST = [0,OBSERVATION_LIST] # remember: we talk in [code, [obs1,obs2,obs3....]] form.
             # send observations to client
             if(OBSERVATION_LIST[0] == True): # if we have the "DONE" marker of our game.
+                SEND_LIST = [0,OBSERVATION_LIST] # remember: we talk in [code, [obs1,obs2,obs3....]] form.
                 sock.sendto((json.dumps(SEND_LIST)).encode(), (CLIENT_IP, OUT_PORT)) 
                 print("sending ENDGAME message! " + str(SEND_LIST))
+                game.end_game()
             else:
-                sock.sendto((json.dumps(OBSERVATION_LIST)).encode(), (CLIENT_IP, OUT_PORT)) 
-            
+                SEND_LIST = [1,OBSERVATION_LIST] # remember: we talk in [code, [obs1,obs2,obs3....]] form.
+                sock.sendto((json.dumps(SEND_LIST)).encode(), (CLIENT_IP, OUT_PORT)) 
 
-            print("sent message " + str(OBSERVATION_LIST))
+
+            print("sent message " + str(SEND_LIST))
             # we wait for client's response.
             data, addr = sock.recvfrom(1024) 
             # process the response, perform the action in-game.
