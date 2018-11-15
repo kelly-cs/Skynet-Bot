@@ -72,7 +72,7 @@ class SnakeNN:
             new_direction = self.turn_vector_to_the_right(snake_direction)
         for pair in self.vectors_and_keys:
             if pair[0] == new_direction.tolist():
-                game_action = pair[1]
+                game_action = pair[1] # there is some weird scope stuff going on here. what the heck
         return game_action
 
     def generate_observation(self, snake, food, obstacles):
