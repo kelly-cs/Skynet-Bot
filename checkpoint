@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/likai/code/Skynet-Bot/snake_nn_2.tflearn"
+all_model_checkpoint_paths: "/home/likai/code/Skynet-Bot/snake_nn_2.tflearn"

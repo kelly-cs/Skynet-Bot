@@ -2,6 +2,9 @@ import socket
 import json
 
 '''
+Skynet Bot NN System
+Supervised Learning
+
 We receive lists from the NN/CLIENT, and excecute the actions in our game. 
 We continually send observations to the NN/CLIENT so that they can, in turn, send us a JSON List 
 that represents an action they want to perform. We repeat this cycle until the game ends.

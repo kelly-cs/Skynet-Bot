@@ -2,7 +2,7 @@ import curses
 from random import randint
 
 class SnakeGame:
-    def __init__(self, board_width = 100, board_height = 80, gui = False):
+    def __init__(self, board_width = 50, board_height = 75, gui = False):
         self.score = 0
         self.done = False
         self.board = {'width': board_width, 'height': board_height}
@@ -115,6 +115,9 @@ class SnakeGame:
     def generate_observations(self):
         return self.done, self.score, self.snake, self.food, self.obstacles
 
+    def generate_observations_as_list(self):
+        return [self.done, self.score, self.snake, self.food, self.obstacles]
+    
     def render_destroy(self):
         curses.endwin()
 

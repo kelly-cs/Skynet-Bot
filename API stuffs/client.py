@@ -3,6 +3,9 @@ import json
 import time
 
 '''
+Skynet Bot NN System
+Supervised Learning
+
  We send lists to the GAME/SERVER 
 
  ACTION CODES WE SEND: 
