@@ -2,7 +2,7 @@ import curses
 from random import randint
 
 class SnakeGame:
-    def __init__(self, board_width = 25, board_height = 25, gui = False):
+    def __init__(self, board_width = 50, board_height = 50, gui = False):
         self.score = 0
         self.done = False
         self.board = {'width': board_width, 'height': board_height}

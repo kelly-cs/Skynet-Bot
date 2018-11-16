@@ -1,6 +1,7 @@
 import socket
 import json
 import time
+import math
 import tflearn
 from tflearn.layers.core import input_data, fully_connected
 from tflearn.layers.estimator import regression
@@ -80,7 +81,9 @@ vectors_and_keys = [
                 [[1, 0], 2],
                 [[0, -1], 3]
                 ]
+
 training_data = [] # this is where we will return training data to be used.
+PREV_GAME_OBS = []
 CURRENT_GAME_OBS = [] # list of all observation/action pairs for a game. When game completes, they will be paired with a goal value.
 MODE = 1 # MODES: 0 = Inactive, 1 = Data Population + Training (Supervised Learning), 2 = Model Testing
 
@@ -167,7 +170,15 @@ def get_game_action(snake, action):
 def generate_action(snake):
     action = randint(0,2) - 1
     return get_game_action(snake, action)        
-        
+
+def make_prediction(observations, model, prev_observations):
+    new_observations = generate_observation(observations[2],observations[3],observations[4])
+    print(str(new_observations))
+    predictions = []
+    for action in range(-1,2):
+        predictions.append(model.predict(add_action_to_observation(new_observations, action).reshape(-1, 5, 1))) # 5 is the number of observations we pass.
+    return np.argmax(np.array(predictions))
+
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((CLIENT_IP, IN_PORT)) # bind the incoming data port.
 
@@ -189,7 +200,8 @@ while active: # while we're playing
         if(received_json[0] == 1): # if game is in progress, process observations.
             if(MODE == 1): # data population AND training mode [random actions, supervised results]
                 CURRENT_GAME_OBS = received_json[1] # take in the list of observations
-                MSG_LIST[1] = generate_action(CURRENT_GAME_OBS[2])
+                MSG_LIST[1] = generate_action(CURRENT_GAME_OBS[2]) # this is the snake.
+                #MSG_LIST[1] = make_prediction(CURRENT_GAME_OBS, nn_model, PREV_GAME_OBS)
                 # acquire the action to take from our NN, format as a json list.
                 MSG_LIST[0] = 1 # code to indicate we are sending an action [ see above ]
                 sock.sendto((json.dumps(MSG_LIST)).encode(), (SERVER_IP, OUT_PORT)) # send our action to the server.
