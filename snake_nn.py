@@ -171,3 +171,4 @@ class SnakeNN:
 
 if __name__ == "__main__":
     SnakeNN().train()
+    SnakeNN().visualize()
