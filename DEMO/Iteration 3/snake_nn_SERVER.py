@@ -106,7 +106,7 @@ while active:
 
         except Exception as e:
             print("An Error has occurred: " + str(e))
-            #exit()
+            exit()
     
     print("Game " + str(game_counter) + " completed. Looping back to start of program.")
 

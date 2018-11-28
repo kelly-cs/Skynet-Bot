@@ -201,7 +201,7 @@ while active: # while we're playing
             if(MODE == 1): # data population AND training mode [random actions, supervised results]
                 CURRENT_GAME_OBS = received_json[1] # take in the list of observations
                 #MSG_LIST[1] = generate_action(CURRENT_GAME_OBS[2]) # this is the snake.
-                MSG_LIST[1] = make_prediction(CURRENT_GAME_OBS, nn_model, PREV_GAME_OBS)
+                MSG_LIST[1] = get_game_action(CURRENT_GAME_OBS[2], make_prediction(CURRENT_GAME_OBS, nn_model, PREV_GAME_OBS) - 1) # see snake.py and snake_nn2.py from iteration 2 for reasoning
                 print (MSG_LIST[1])
                 # acquire the action to take from our NN, format as a json list.
                 MSG_LIST[0] = 1 # code to indicate we are sending an action [ see above ]

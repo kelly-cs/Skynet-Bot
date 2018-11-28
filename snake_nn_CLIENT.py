@@ -168,7 +168,7 @@ def get_game_action(snake, action):
     return game_action
 
 def generate_action(snake):
-    action = randint(0,2) - 1
+    action = make_prediction(0,2) - 1
     return get_game_action(snake, action)        
 
 def make_prediction(observations, model, prev_observations):
@@ -177,7 +177,7 @@ def make_prediction(observations, model, prev_observations):
     predictions = []
     for action in range(-1,2):
         predictions.append(model.predict(add_action_to_observation(new_observations, action).reshape(-1, 5, 1))) # 5 is the number of observations we pass.
-    return np.argmax(np.array(predictions))
+    return int(np.argmax(np.array(predictions)))
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((CLIENT_IP, IN_PORT)) # bind the incoming data port.
@@ -200,27 +200,32 @@ while active: # while we're playing
         if(received_json[0] == 1): # if game is in progress, process observations.
             if(MODE == 1): # data population AND training mode [random actions, supervised results]
                 CURRENT_GAME_OBS = received_json[1] # take in the list of observations
-                MSG_LIST[1] = generate_action(CURRENT_GAME_OBS[2]) # this is the snake.
-                #MSG_LIST[1] = make_prediction(CURRENT_GAME_OBS, nn_model, PREV_GAME_OBS)
+                #MSG_LIST[1] = generate_action(CURRENT_GAME_OBS[2]) # this is the snake.
+                MSG_LIST[1] = get_game_action(CURRENT_GAME_OBS[2], make_prediction(CURRENT_GAME_OBS, nn_model, PREV_GAME_OBS) - 1) # see snake.py and snake_nn2.py from iteration 2 for reasoning
+                print (MSG_LIST[1])
                 # acquire the action to take from our NN, format as a json list.
                 MSG_LIST[0] = 1 # code to indicate we are sending an action [ see above ]
+                print (MSG_LIST[0])
                 sock.sendto((json.dumps(MSG_LIST)).encode(), (SERVER_IP, OUT_PORT)) # send our action to the server.
                 print("sending data: " + str(MSG_LIST))
             elif(MODE == 2): # Model Testing
                 CURRENT_GAME_OBS = received_json[1] # take in the list of observations
+                print(CURRENT_GAME_OBS)
                 # acquire the action to take from our NN, format as a json list.
                 MSG_LIST[0] = 1 # code to indicate we are sending an action [ see above ]
+                print(MSG_LIST[0])
                 sock.sendto((json.dumps(MSG_LIST)).encode(), (SERVER_IP, OUT_PORT)) # send our action to the server.
                 print("sending data: " + str(MSG_LIST))
                 # TESTING MODE - USES THE NN TO GENERATE ACTIONS
         else:
             print("The game server is not ready yet. Exiting...")
-            exit()
+            break
 
     except Exception as e:
         print("An Error has Occurred: " + str(e))
-        exit()
+        #exit()
 
     
 
     
+
