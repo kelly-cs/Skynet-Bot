@@ -177,7 +177,7 @@ def make_prediction(observations, model, prev_observations):
     predictions = []
     for action in range(-1,2):
         predictions.append(model.predict(add_action_to_observation(new_observations, action).reshape(-1, 5, 1))) # 5 is the number of observations we pass.
-    return np.argmax(np.array(predictions))
+    return int(np.argmax(np.array(predictions)))
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((CLIENT_IP, IN_PORT)) # bind the incoming data port.
@@ -219,11 +219,11 @@ while active: # while we're playing
                 # TESTING MODE - USES THE NN TO GENERATE ACTIONS
         else:
             print("The game server is not ready yet. Exiting...")
-            exit()
+            break
 
     except Exception as e:
         print("An Error has Occurred: " + str(e))
-        exit()
+        #exit()
 
     
 
