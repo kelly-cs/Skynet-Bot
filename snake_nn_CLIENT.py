@@ -11,33 +11,33 @@ from random import randint
 Skynet Bot NN System
 Supervised Learning
 
- We send lists to the GAME/SERVER 
+We send lists to the GAME/SERVER 
 
- ACTION CODES WE SEND: 
- "connecting" - 0  // send this again AFTER you receive a 0 code from the Server to restart multiple games for training.
- "action" - 1
- "quitting" - 2
+ACTION CODES WE SEND: 
+0 - connecting | our indication to start the game. No other data is sent. // send this again AFTER you receive a 0 code from the Server to restart multiple games for training.
+1 - action | this indicates the client is sending us an action for us to execute.
+2 - quitting | this indicates the client is quitting. We should end the game gracefully. 
 
- ACTIONS:
- A list of required instructions, output by the neural network. Can have any # of list elements.
 
- TYPE: JSON
- CONTENT: [ACTION CODE, [action instructions1,2,3,4,5.....]]
- EXAMPLE: ["action", [1,5,-2]] 
- USAGE: This will essentially instruct the game that the data being sent is in fact an action we wish it to perform.
-        The data can represent anything, and it's not our job to necessarily care what it means -  it can vary.
+ACTIONS:
+A list of required instructions, output by the neural network. Can have any # of list elements.
+
+TYPE: JSON
+CONTENT: [ACTION CODE, [action instructions1,2,3,4,amt_of_observations.....]]
+EXAMPLE: ["action", [1,amt_of_observations,-2]] 
+USAGE: This will essentially instruct the game that the data being sent is in fact an action we wish it to perform.
+The data can represent anything, and it's not our job to necessarily care what it means -  it can vary.
 
 RESPONSES WE RECEIVE:
+2 - game is complete, will restart 
+1 - game in process | send a list of observations with this code.
+0 - game is complete, no restart | pair with an extra value that indiciates how well the AI did.
+-1 - not available | no extra data to send. Default state.
 The server will send us lists of observations regularly. We will then process those observations,
 make a decision, and proceed this cycle until we receive an "end of game" code from the game.
 
-RESPONSE CODES WE RECEIVE:
-"game in process" 1
-"game is complete" 0
-"not available" -1
-
 RESPONSE EXAMPLE:
-[1, [observations]] ... e.g. [1, [1,5,-2,3....]]
+[1, [observations]] ... e.g. [1, [1,a5,-2,3....]]
 or
 [0, 4141]
 [0, 0.5242]
@@ -72,6 +72,7 @@ filename = "snake_nn_2.tflearn"
 test_gamaes = 1000
 initial_games = 10000
 goal = 2000
+amt_of_observations = 5 # including the action: so, 4 observations, 1 action paired with them.
 
 
 # kinda irrelevant - just for use in the snake game.
@@ -88,7 +89,7 @@ CURRENT_GAME_OBS = [] # list of all observation/action pairs for a game. When ga
 MODE = 1 # MODES: 0 = Inactive, 1 = Data Population + Training (Supervised Learning), 2 = Model Testing
 
 def model():
-    network = input_data(shape=[None, 5, 1], name='input') # shape of data [left, forward, right, angle, 
+    network = input_data(shape=[None, amt_of_observations, 1], name='input') # shape of data [left, forward, right, angle, 
 
     # Activation and Regularization inside a layer:
     network = fully_connected(network, 25, activation='relu') # hidden layer neurons
@@ -101,7 +102,7 @@ def model():
     return model
 
 def train_model(training_data, model):
-    X = np.array([i[0] for i in training_data]).reshape(-1, 5, 1) # observations array
+    X = np.array([i[0] for i in training_data]).reshape(-1, amt_of_observations, 1) # observations array
     y = np.array([i[1] for i in training_data]).reshape(-1, 1) # fitness value
     model.fit(X,y, n_epoch = 3, shuffle = True, run_id = filename)
     model.save(filename)
@@ -176,7 +177,7 @@ def make_prediction(observations, model, prev_observations):
     print(str(new_observations))
     predictions = []
     for action in range(-1,2):
-        predictions.append(model.predict(add_action_to_observation(new_observations, action).reshape(-1, 5, 1))) # 5 is the number of observations we pass.
+        predictions.append(model.predict(add_action_to_observation(new_observations, action).reshape(-1, amt_of_observations, 1))) # amt_of_observations is the number of observations we pass.
     return int(np.argmax(np.array(predictions)))
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

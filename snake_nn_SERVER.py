@@ -1,3 +1,4 @@
+import math
 import socket
 import json
 from snake import SnakeGame
@@ -18,8 +19,9 @@ CODES WE RECEIVE FROM CLIENT:
 2 - quitting | this indicates the client is quitting. We should end the game gracefully. 
 
 CODES WE SEND:
+2 - game is complete, will restart 
 1 - game in process | send a list of observations with this code.
-0 - game is complete | pair with an extra value that indiciates how well the AI did.
+0 - game is complete, no restart | pair with an extra value that indiciates how well the AI did.
 -1 - not available | no extra data to send. Default state.
 
 
@@ -35,6 +37,73 @@ SEND_LIST = [-1]
 active = True
 game_counter = 1
 MODE = 1 # 0 = text, 1 = visualize
+
+
+
+
+def generate_observation(snake, food, obstacles):
+    snake_direction = get_snake_direction_vector(snake)
+    food_direction = get_food_direction_vector(snake, food)
+    barrier_left = is_direction_blocked(snake, turn_vector_to_the_left(snake_direction), obstacles)
+    barrier_front = is_direction_blocked(snake, snake_direction, obstacles)
+    barrier_right = is_direction_blocked(snake, turn_vector_to_the_right(snake_direction), obstacles)
+    angle = get_angle(snake_direction, food_direction)
+    return np.array([int(barrier_left), int(barrier_front), int(barrier_right), str(angle)])
+
+###################################################
+# GAME SPECIFIC FUNCTIONS                         #
+###################################################
+def add_action_to_observation(observation, action):
+    return np.append([action], observation)
+
+def get_snake_direction_vector(snake):
+    return np.array(snake[0]) - np.array(snake[1])
+
+def get_food_direction_vector(snake, food):
+    return np.array(food) - np.array(snake[0])
+    
+def normalize_vector(vector):
+    return vector / np.linalg.norm(vector)
+
+def get_food_distance(snake, food):
+    return np.linalg.norm(get_food_direction_vector(snake, food))
+
+def is_direction_blocked(snake, direction, obstacles):
+    point = np.array(snake[0]) + np.array(direction)
+    return(point.tolist() in snake[:-1] or point[0] == 0 or point[1] == 0 or point[0] == 21 or point[1] == 21 or (point.tolist() in obstacles))
+
+def turn_vector_to_the_left(vector):
+    return np.array([-vector[1], vector[0]])
+
+def turn_vector_to_the_right(vector):
+    return np.array([vector[1], -vector[0]])
+
+def get_angle(a, b):
+    a = normalize_vector(a)
+    b = normalize_vector(b)
+    return math.atan2(a[0] * b[1] - a[1] * b[0], a[0] * b[0] + a[1] * b[1]) / math.pi
+
+
+def get_game_action(snake, action):
+    print("snake: " + str(snake))
+    print("random action: " + str(action))
+    snake_direction = get_snake_direction_vector(snake)
+    new_direction = snake_direction
+    if action == -1:
+        new_direction = turn_vector_to_the_left(snake_direction)
+    elif action == 1:
+        new_direction = turn_vector_to_the_right(snake_direction)
+    for pair in vectors_and_keys:
+        if pair[0] == new_direction.tolist():
+            game_action = pair[1]
+    return game_action
+
+def generate_action(snake):
+    action = make_prediction(0,2) - 1
+    return get_game_action(snake, action)        
+
+###################################################
+
 
 # this will perform necessary steps to start the game and get it ready to perform, and return any values we will be manipulating.
 # will return these values as a list.
@@ -71,7 +140,9 @@ while active:
     while in_progress:
         try:
             # acquire observations from game, as a list.
-            OBSERVATION_LIST = game.generate_observations_as_list()
+            OBSERVATION_LIST = game.generate_observations_as_list() # get a list of observations
+            #OBSERVATION_LIST = generate_observation(OBSERVATION_LIST[2], OBSERVATION_LIST[3], OBSERVATION_LIST[4])
+            
             # send observations to client
             if(OBSERVATION_LIST[0] == True): # if we have the "DONE" marker of our game.
                 SEND_LIST = [0,OBSERVATION_LIST] # remember: we talk in [code, [obs1,obs2,obs3....]] form.
