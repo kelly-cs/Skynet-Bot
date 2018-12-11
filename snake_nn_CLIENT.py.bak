@@ -11,12 +11,12 @@ from random import randint
 Skynet Bot NN System
 Supervised Learning
 
-We send lists to the GAME/SERVER
+We send lists to the GAME/SERVER 
 
-ACTION CODES WE SEND:
+ACTION CODES WE SEND: 
 0 - connecting | our indication to start the game. No other data is sent. // send this again AFTER you receive a 0 code from the Server to restart multiple games for training.
 1 - action | this indicates the client is sending us an action for us to execute.
-2 - quitting | this indicates the client is quitting. We should end the game gracefully.
+2 - quitting | this indicates the client is quitting. We should end the game gracefully. 
 
 
 ACTIONS:
@@ -24,12 +24,12 @@ A list of required instructions, output by the neural network. Can have any # of
 
 TYPE: JSON
 CONTENT: [ACTION CODE, [action instructions1,2,3,4,amt_of_observations.....]]
-EXAMPLE: ["action", [1,amt_of_observations,-2]]
+EXAMPLE: ["action", [1,amt_of_observations,-2]] 
 USAGE: This will essentially instruct the game that the data being sent is in fact an action we wish it to perform.
 The data can represent anything, and it's not our job to necessarily care what it means -  it can vary.
 
 RESPONSES WE RECEIVE:
-2 - game is complete, will restart
+2 - game is complete, will restart 
 1 - game in process | send a list of observations with this code.
 0 - game is complete, no restart | pair with an extra value that indiciates how well the AI did.
 -1 - not available | no extra data to send. Default state.
@@ -46,19 +46,19 @@ did our AI do in reaching its goal?". 0 response codes will take all data retrie
 and use it to re-evaluate weights it uses to make decisions. The goal the AI is trying to reach can be
 specified to our NN before the process begins, and then we can use that data to help the AI make better
 decisions later.
-
+ 
  FUTURE PLANS: To make this system more robust, and able to handle more complex instructions, it may make sense to
                nest multiple neural networks together to make more complex decisions independent of one another.
                So, for a real-time strategy game [say, starcraft] we could attempt a framework that does the following:
-
+               
                     Main Strategy NN [Delegates Tasks]
                     | Micro NN             | Macro NN
                     + Makes Decisions      + Makes decisions based on "build orders"
-                    Focused solely on unit   More broad decisionmaking
+                    Focused solely on unit   More broad decisionmaking 
                     control
+                    
 
-
-
+ 
 '''
 CLIENT_IP = "127.0.0.1" # That's Me!
 SERVER_IP = "127.0.0.1"
@@ -89,14 +89,14 @@ CURRENT_GAME_OBS = [] # list of all observation/action pairs for a game. When ga
 MODE = 1 # MODES: 0 = Inactive, 1 = Data Population + Training (Supervised Learning), 2 = Model Testing
 
 def model():
-    network = input_data(shape=[None, amt_of_observations, 1], name='input') # shape of data [left, forward, right, angle,
+    network = input_data(shape=[None, amt_of_observations, 1], name='input') # shape of data [left, forward, right, angle, 
 
     # Activation and Regularization inside a layer:
     network = fully_connected(network, 25, activation='relu') # hidden layer neurons
     # Equivalent to:
     network = fully_connected(network, 1, activation='linear') # hidden layer neurons
 
-    # Optimizer, Objective and Metric:
+    # Optimizer, Objective and Metric:        
     network = regression(network, optimizer='adam', learning_rate=lr, loss='mean_square', name='target')
     model = tflearn.DNN(network, tensorboard_dir='log')
     return model
@@ -131,7 +131,7 @@ def get_snake_direction_vector(snake):
 
 def get_food_direction_vector(snake, food):
     return np.array(food) - np.array(snake[0])
-
+    
 def normalize_vector(vector):
     return vector / np.linalg.norm(vector)
 
@@ -170,7 +170,7 @@ def get_game_action(snake, action):
 
 def generate_action(snake):
     action = make_prediction(0,2) - 1
-    return get_game_action(snake, action)
+    return get_game_action(snake, action)        
 
 def make_prediction(observations, model, prev_observations):
     new_observations = generate_observation(observations[2],observations[3],observations[4])
@@ -186,7 +186,7 @@ sock.bind((CLIENT_IP, IN_PORT)) # bind the incoming data port.
 print("loading nn")
 nn_model = model()
 nn_model.load(filename)
-
+        
 # initial connection
 print("Connecting to Game Server at: " + SERVER_IP + ":" + str(OUT_PORT) + "...")
 sock.sendto((json.dumps(MSG_LIST)).encode(), (SERVER_IP, OUT_PORT)) # inform the server we have connected.
@@ -196,7 +196,7 @@ while active: # while we're playing
         data, addr = sock.recvfrom(1024) # we wait for server's response.
         received_json = json.loads(data)
         print("data received:" + str(received_json))
-
+        
         # If game is in progress, process data according to the mode we have selected.
         if(received_json[0] == 1): # if game is in progress, process observations.
             if(MODE == 1): # data population AND training mode [random actions, supervised results]
@@ -218,12 +218,12 @@ while active: # while we're playing
                 sock.sendto((json.dumps(MSG_LIST)).encode(), (SERVER_IP, OUT_PORT)) # send our action to the server.
                 print("sending data: " + str(MSG_LIST))
                 # TESTING MODE - USES THE NN TO GENERATE ACTIONS
-        elif(received_json[0] == 0): # if the game is over and is not restarting.
-            print("The game server has disconnected: Game Complete, no restart.")
-            active = 0
-            break
+    	elif(received_json[0] == 0): # if the game is over and is not restarting.
+			print("The game server has disconnected: Game Complete, no restart.")
+			active = 0
+			break
         elif(received_json[0] == 2): # if game is complete, and will restart.
-            print("Game complete! Negotiating restart...")
+			print("Game complete! Negotiating restart...")
         else:
             print("The game server is not ready yet. Exiting...")
             break
@@ -231,3 +231,8 @@ while active: # while we're playing
     except Exception as e:
         print("An Error has Occurred: " + str(e))
         #exit()
+
+    
+
+    
+

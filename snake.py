@@ -123,7 +123,7 @@ class SnakeGame:
 
     def end_game(self):
         if self.gui:
-            render_destroy()
+            curses.endwin()
             exit()
 
 if __name__ == "__main__":

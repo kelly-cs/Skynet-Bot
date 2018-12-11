@@ -147,8 +147,8 @@ while active:
             if(OBSERVATION_LIST[0] == True): # if we have the "DONE" marker of our game.
                 SEND_LIST = [0,OBSERVATION_LIST] # remember: we talk in [code, [obs1,obs2,obs3....]] form.
                 sock.sendto((json.dumps(SEND_LIST)).encode(), (CLIENT_IP, OUT_PORT)) 
-                print("sending ENDGAME message! " + str(SEND_LIST))
                 game.end_game()
+                print("sending ENDGAME message! " + str(SEND_LIST))
             else:
                 SEND_LIST = [1,OBSERVATION_LIST] # remember: we talk in [code, [obs1,obs2,obs3....]] form.
                 sock.sendto((json.dumps(SEND_LIST)).encode(), (CLIENT_IP, OUT_PORT)) 
@@ -168,7 +168,7 @@ while active:
                 in_progress = false
                 connected = false
                 print("Client is disconnecting. Exiting game.")
-                exit()
+                
             elif(received_json[0] == 0):
                 print("WARNING: A client is connecting, even though game is in progress!")
             else:
